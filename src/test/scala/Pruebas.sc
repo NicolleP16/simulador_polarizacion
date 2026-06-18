@@ -23,3 +23,17 @@ val likert5 = Vector(0.0, 0.25, 0.5, 0.75, 1.0)
    *   cmt1(pi_cons_der,    likert5) ~= 0.0
    *   cmt1(pi_cons_izq,    likert5) ~= 0.0
    */
+
+/*
+   * Resultados esperados con val cmt1 norm = normalizar(cmt1):
+   *   cmt1 norm(pi max, likert5)
+   *   cmt1 norm(pi min , likert5)
+   *   cmt1 norm(pi der , likert5)
+   *   cmt1 norm(pi izq , likert5)
+   *   cmt1 norm(pi int1 , likert5)
+   *   cmt1 norm(pi int2 , likert5)
+   *   cmt1 norm(pi int3 , likert5)
+   *   cmt1 norm(pi cons centro , likert5)
+   *   cmt1 norm(pi cons der , likert5)
+   *   cmt1 norm(pi cons izq , likert5)
+   */

@@ -30,4 +30,19 @@ package object Comete {
       rhoAux(pOptimo)
     }
   }
+
+  def normalizar(m: PolMeasure): PolMeasure = {
+    (dist: Distribution) => {
+      val (_, values) = dist
+      val peorCaso =
+        (
+          Vector.tabulate(values.length) { i =>
+            if (i == 0 || i == values.length - 1) 0.5
+            else 0.0
+          },
+          values
+        )
+      m(dist) / m(peorCaso)
+    }
+  }
 }
