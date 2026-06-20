@@ -1,3 +1,5 @@
+import Comete._
+
 //Valores de prueba
 val pi_max = Vector(0.5, 0.0, 0.0, 0.0, 0.5)
 val pi_min = Vector(0.0, 0.0, 1.0, 0.0, 0.0)
@@ -23,17 +25,41 @@ val likert5 = Vector(0.0, 0.25, 0.5, 0.75, 1.0)
    *   cmt1(pi_cons_der,    likert5) ~= 0.0
    *   cmt1(pi_cons_izq,    likert5) ~= 0.0
    */
+val cmt1 = rhoCMTGen(1.2, 1.2)
+
+cmt1((pi_max, likert5))
+cmt1((pi_min, likert5))
+cmt1((pi_der, likert5))
+cmt1((pi_izq, likert5))
+cmt1((pi_int1, likert5))
+cmt1((pi_int2, likert5))
+cmt1((pi_int3, likert5))
+cmt1(pi_cons_centro, likert5)
+cmt1(pi_cons_der, likert5)
+cmt1(pi_cons_izq, likert5)
 
 /*
    * Resultados esperados con val cmt1 norm = normalizar(cmt1):
-   *   cmt1 norm(pi max, likert5)
-   *   cmt1 norm(pi min , likert5)
-   *   cmt1 norm(pi der , likert5)
-   *   cmt1 norm(pi izq , likert5)
-   *   cmt1 norm(pi int1 , likert5)
-   *   cmt1 norm(pi int2 , likert5)
-   *   cmt1 norm(pi int3 , likert5)
-   *   cmt1 norm(pi cons centro , likert5)
-   *   cmt1 norm(pi cons der , likert5)
-   *   cmt1 norm(pi cons izq , likert5)
+   *   cmt1 norm(pi max, likert5) ~= 1.0
+   *   cmt1 norm(pi min , likert5) ~= 0.0
+   *   cmt1 norm(pi der , likert5) ~= 0.863
+   *   cmt1 norm(pi izq , likert5) ~= 0.863
+   *   cmt1 norm(pi int1 , likert5) ~= 0.435
+   *   cmt1 norm(pi int2 , likert5) ~= 0.435
+   *   cmt1 norm(pi int3 , likert5) ~= 0.625
+   *   cmt1 norm(pi cons centro , likert5) ~= 0.0
+   *   cmt1 norm(pi cons der , likert5) ~= 0.0
+   *   cmt1 norm(pi cons izq , likert5) ~= 0.0
    */
+
+val cmt1_norm = normalizar(cmt1)
+cmt1_norm(pi_max, likert5)
+cmt1_norm(pi_min, likert5)
+cmt1_norm(pi_der, likert5)
+cmt1_norm(pi_izq, likert5)
+cmt1_norm(pi_int1, likert5)
+cmt1_norm(pi_int2, likert5)
+cmt1_norm(pi_int3, likert5)
+cmt1_norm(pi_cons_centro , likert5)
+cmt1_norm(pi_cons_der, likert5)
+cmt1_norm(pi_cons_izq , likert5)
