@@ -31,10 +31,11 @@ package object Opinion {
 
 
 
-
+      /*
       def rhoAux(p: Double): Double = pi.zip(y).map { case (piI, yI) => math.pow(piI, alpha) * math.pow(math.abs(yI - p), beta)}.sum
       val pOptimo = min_p(rhoAux, 0.0, 1.0, 1e-6)
       rhoAux(pOptimo)
+      */
     }
   }
 
