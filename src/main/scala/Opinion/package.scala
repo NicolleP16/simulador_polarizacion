@@ -26,49 +26,49 @@ package object Opinion {
       if ( i < middle ) 0.0 else 1.0)
   }
 
-
-  def rho (alpha : Double , beta : Double ) : AgentsPolMeasure= {
-    (agents: SpecificBelief , y:DistributionValues) => {
-
-      def buildBounds(dv:DistributionValues): Vector[(Double,Double)] = {
-        val k = dv.length
-        val mids = (0 until k - 1).map { i =>
-          (dv(i) + dv(i + 1)) / 2.0
-        }.toVector
-        val bounds = Vector(0.0) ++ mids ++ Vector(1.0)
-        bounds.zip(bounds.tail)
-      }
-
-      def countInterval(body:SpecificBelief,tuple:(Double,Double)): Int = {
-          body.count(x =>
-            if (tuple._2 == 1.0)
-              tuple._1 <= x && x <= tuple._2
-            else
-              tuple._1 <= x && x < tuple._2
-          )
-      }
-
-      def pi_b(entities:SpecificBelief,distribution:DistributionValues):Vector[Double] = {
-
-        val bounds = buildBounds(distribution)
-
-        val count = bounds.map(interval=>countInterval(entities,interval))
-
-        val totalAgents = entities.length.toDouble
-
-        count.map(_/totalAgents)
-
-      }
-
-      val pi = pi_b(agents,y)
-
-      def rhoAux(p: Double): Double = {
-        pi.zip(y).map { case (piI, yI) => math.pow(piI, alpha) * math.pow(math.abs(yI - p), beta)}.sum
-      }
-      val pOptimo = min_p(rhoAux, 0.0, 1.0, 1e-6)
-      rhoAux(pOptimo)
-
-    }
+  def allTripleBelief(nags: Int): SpecificBelief= {
+    val oneThird= nags/3
+    val twoThird = (nags/3) * 2
+    Vector.tabulate(nags)((i : Int) =>
+      if (i < oneThird) 0.0
+      else if (i >= twoThird) 1.0
+        else 0.5)
   }
 
+  def consensusBelief(b:Double)(nags: Int): SpecificBelief= {
+    Vector.tabulate(nags)(( i:Int) => b)
+  }
+
+  def rho(alpha: Double, beta: Double): AgentsPolMeasure = {
+
+    def buildBounds(dv: DistributionValues): Vector[(Double, Double)] = {
+      val k = dv.length
+      val mids = (0 until k - 1).map { i => (dv(i) + dv(i + 1)) / 2.0}.toVector
+
+      val bounds = Vector(0.0) ++ mids ++ Vector(1.0)
+      bounds.zip(bounds.tail)
+    }
+
+    def countInterval(body: SpecificBelief, interval: (Double, Double)): Int = {
+      body.count(x =>
+        if (interval._2 == 1.0) interval._1 <= x && x <= interval._2
+        else interval._1 <= x && x < interval._2
+      )
+    }
+
+    def pi_b(entities: SpecificBelief, distribution: DistributionValues): Vector[Double] = {
+      val bounds = buildBounds(distribution)
+      val counts = bounds.map(interval => countInterval(entities, interval))
+      val totalAgents = entities.length.toDouble
+
+      counts.map(_.toDouble / totalAgents)
+    }
+
+    val medidaNorm = normalizar(rhoCMTGen(alpha, beta))
+
+    (agents: SpecificBelief, y: DistributionValues) => {
+      val pi = pi_b(agents, y)
+      medidaNorm((pi, y))
+    }
+  }
 }
