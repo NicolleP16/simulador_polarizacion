@@ -71,4 +71,27 @@ package object Opinion {
       medidaNorm((pi, y))
     }
   }
+
+  type WeightedGraph = (Int,Int) => Double
+  type SpecificWeightedGraph = (WeightedGraph, Int)
+  type GenericWeightedGraph = Int => SpecificWeightedGraph
+
+  def i1(nags:Int): SpecificWeightedGraph = {
+    (( i : Int , j : Int) =>
+      if (i==j) 1.0
+      else if (i<j) 1.0/(j-i).toDouble
+      else 0.0,nags)
+  }
+  def i2(nags:Int ):SpecificWeightedGraph ={
+    ((i: Int, j: Int) => if (i==j) 1.0
+    else if (i<j) (j-i).toDouble/nags.toDouble
+    else if (i<j) (j-i).toDouble/nags.toDouble
+    else (nags-(i-j)).toDouble/nags.toDouble, nags)
+  }
+
+  def showWeightedGraph(swg: SpecificWeightedGraph): IndexedSeq[IndexedSeq[Double]] = {
+    val (g, nags) = swg
+
+    IndexedSeq.tabulate(nags) { i => IndexedSeq.tabulate(nags) { j => g(i, j) }}
+  }
 }

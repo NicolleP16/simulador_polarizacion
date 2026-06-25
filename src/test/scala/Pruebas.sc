@@ -103,3 +103,10 @@ rho2(sb_midly, dist1)
 rho1(sb_midly, dist2)
 rho2(sb_midly, dist2)
 
+val i1_10=i1(10)
+val i2_10=i2(10)
+val i1_20=i1(20)
+val i2_20=i2(20)
+
+showWeightedGraph(i1_10)
+showWeightedGraph(i2_10)
