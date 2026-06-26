@@ -119,4 +119,13 @@ package object Opinion {
       }
     }
   }
+
+  def simulate(fu: FunctionUpdate,
+               swg: SpecificWeightedGraph,
+               b0: SpecificBelief,
+               t: Int): IndexedSeq[SpecificBelief] = {
+    (0 until t).scanLeft(b0) { (bActual, _) =>
+      fu(bActual, swg)
+    }
+  }
 }
