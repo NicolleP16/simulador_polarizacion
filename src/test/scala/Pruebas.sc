@@ -110,3 +110,63 @@ val i2_20=i2(20)
 
 showWeightedGraph(i1_10)
 showWeightedGraph(i2_10)
+
+
+val sbu_10 = uniformBelief(10)
+val sbm_10 = midlyBelief(10)
+
+// Verificar que la creencia inicial es correcta
+// sbu_10 = Vector(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+sbu_10
+
+// Aplicar un paso de confBiasUpdate con i1_10
+// Resultado esperado:
+// Vector(0.1, 0.155, 0.243, 0.34, 0.44, 0.541, 0.644, 0.747, 0.851, 0.955)
+val cbu_sbu_i1 = confBiasUpdate(sbu_10, i1_10)
+cbu_sbu_i1
+
+// Polarización antes y después del primer paso (debe bajar levemente)
+// Esperado: 0.383 -> 0.380
+rho1(sbu_10, dist1)
+rho1(cbu_sbu_i1, dist1)
+
+// sbm_10 = Vector(0.21, 0.22, 0.23, 0.24, 0.25, 0.75, 0.76, 0.77, 0.78, 0.79)
+sbm_10
+
+// Aplicar un paso de confBiasUpdate con i1_10 sobre sbm_10
+// Resultado esperado:
+// Vector(0.21, 0.215, 0.223, 0.232, 0.242, 0.655, 0.707, 0.733, 0.752, 0.768)
+val cbu_sbm_i1 = confBiasUpdate(sbm_10, i1_10)
+cbu_sbm_i1
+
+// Polarización antes y después (debe mantenerse similar)
+// Esperado: 0.435 -> 0.435
+rho1(sbm_10, dist1)
+rho1(cbu_sbm_i1, dist1)
+
+
+// simulate con uniformBelief(10) durante 2 pasos usando i1_10
+// Devuelve IndexedSeq con 3 elementos: [b0, b1, b2]
+// Resultado esperado con polarización:
+//   (b0, 0.383), (b1, 0.380), (b2, 0.335)
+val sim_sbu_i1 = simulate(confBiasUpdate, i1_10, sbu_10, 2)
+for {
+  b <- sim_sbu_i1
+} yield (b, rho1(b, dist1))
+
+// simulate con midlyBelief(10) durante 2 pasos usando i1_10
+// Resultado esperado con polarización:
+//   (b0, 0.435), (b1, 0.435), (b2, 0.377)
+val sim_sbm_i1 = simulate(confBiasUpdate, i1_10, sbm_10, 2)
+for {
+  b <- sim_sbm_i1
+} yield (b, rho1(b, dist1))
+
+// Verificar que simulate devuelve t+1 elementos
+// Esperado: 3
+sim_sbu_i1.length
+
+// Verificar que el primer elemento es siempre b0 sin modificar
+// Esperado: true
+sim_sbu_i1.head == sbu_10
+sim_sbm_i1.head == sbm_10
