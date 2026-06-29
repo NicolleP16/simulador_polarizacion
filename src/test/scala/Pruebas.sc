@@ -111,7 +111,6 @@ val i2_20=i2(20)
 showWeightedGraph(i1_10)
 showWeightedGraph(i2_10)
 
-
 val sbu_10 = uniformBelief(10)
 val sbm_10 = midlyBelief(10)
 
@@ -170,3 +169,31 @@ sim_sbu_i1.length
 // Esperado: true
 sim_sbu_i1.head == sbu_10
 sim_sbm_i1.head == sbm_10
+
+val rho1Par = rhoPar(1.2, 1.2)
+val rho2Par = rhoPar(2.0, 1.0)
+
+rho1Par(sb_ext, dist1)
+rho2Par(sb_ext, dist1)
+rho1Par(sb_ext, dist2)
+rho2Par(sb_ext, dist2)
+
+rho1Par(sb_cons, dist1)
+rho2Par(sb_cons, dist1)
+rho1Par(sb_cons, dist2)
+rho2Par(sb_cons, dist2)
+
+rho1Par(sb_unif, dist1)
+rho2Par(sb_unif, dist1)
+rho1Par(sb_unif, dist2)
+rho2Par(sb_unif, dist2)
+
+rho1Par(sb_triple, dist1)
+rho2Par(sb_triple, dist1)
+rho1Par(sb_triple, dist2)
+rho2Par(sb_triple, dist2)
+
+rho1Par(sb_midly, dist1)
+rho2Par(sb_midly, dist1)
+rho1Par(sb_midly, dist2)
+rho2Par(sb_midly, dist2)
