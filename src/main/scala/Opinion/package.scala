@@ -175,38 +175,4 @@ package object Opinion {
       medidaNorm((pi, y))
     }
   }
-  // ── FunctionUpdate ────────────────────────────────────────
-  type FunctionUpdate =
-    (SpecificBelief, SpecificWeightedGraph) => SpecificBelief
-
-  def confBiasUpdate(sb: SpecificBelief,
-                     swg: SpecificWeightedGraph): SpecificBelief = {
-    val (influence, nags) = swg
-
-    Vector.tabulate(nags) { i =>
-      val bi        = sb(i)
-      // Aᵢ: agentes j con influencia directa sobre i
-      val neighbors = (0 until nags).filter(j => influence(j, i) > 0.0)
-
-      if (neighbors.isEmpty) bi
-      else {
-        val numerador = neighbors.map { j =>
-          val bj      = sb(j)
-          val beta_ij = 1.0 - math.abs(bj - bi)  // sesgo de confirmación
-          beta_ij * influence(j, i) * (bj - bi)
-        }.sum
-
-        math.max(0.0, math.min(1.0, bi + numerador / neighbors.size))
-      }
-    }
-  }
-
-  def simulate(fu: FunctionUpdate,
-               swg: SpecificWeightedGraph,
-               b0: SpecificBelief,
-               t: Int): IndexedSeq[SpecificBelief] = {
-    (0 until t).scanLeft(b0) { (bActual, _) =>
-      fu(bActual, swg)
-    }
-  }
 }
