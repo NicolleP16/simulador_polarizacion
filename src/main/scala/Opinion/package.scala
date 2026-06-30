@@ -10,37 +10,6 @@ package object Opinion {
   type GenericBeliefConf = Int => SpecificBelief
   type AgentsPolMeasure = (SpecificBelief, DistributionValues) => Double
 
-  def uniformBelief(nags: Int): SpecificBelief = {
-    Vector.tabulate(nags)((i: Int) =>
-      (i + 1).toDouble / nags.toDouble)
-  }
-
-  def midlyBelief(nags: Int): SpecificBelief = {
-    val middle = nags / 2
-    Vector.tabulate(nags)((i: Int) =>
-      if (i < middle) math.max(0.25 - 0.01 * (middle - i - 1), 0)
-      else math.min(0.75 - 0.01 * (middle - i), 1))
-  }
-
-  def allExtremeBelief(nags: Int): SpecificBelief = {
-    val middle = nags / 2
-    Vector.tabulate(nags)((i: Int) =>
-      if (i < middle) 0.0 else 1.0)
-  }
-
-  def allTripleBelief(nags: Int): SpecificBelief = {
-    val oneThird = nags / 3
-    val twoThird = (nags / 3) * 2
-    Vector.tabulate(nags)((i: Int) =>
-      if (i < oneThird) 0.0
-      else if (i >= twoThird) 1.0
-      else 0.5)
-  }
-
-  def consensusBelief(b: Double)(nags: Int): SpecificBelief = {
-    Vector.tabulate(nags)((i: Int) => b)
-  }
-
   def rho(alpha: Double, beta: Double): AgentsPolMeasure = {
 
     def buildBounds(dv: DistributionValues): Vector[(Double, Double)] = {
@@ -78,20 +47,6 @@ package object Opinion {
   type SpecificWeightedGraph = (WeightedGraph, Int)
   type GenericWeightedGraph = Int => SpecificWeightedGraph
 
-  def i1(nags: Int): SpecificWeightedGraph = {
-    ((i: Int, j: Int) =>
-      if (i == j) 1.0
-      else if (i < j) 1.0 / (j - i).toDouble
-      else 0.0, nags)
-  }
-
-  def i2(nags: Int): SpecificWeightedGraph = {
-    ((i: Int, j: Int) => if (i == j) 1.0
-    else if (i < j) (j - i).toDouble / nags.toDouble
-    else if (i < j) (j - i).toDouble / nags.toDouble
-    else (nags - (i - j)).toDouble / nags.toDouble, nags)
-  }
-
   def showWeightedGraph(swg: SpecificWeightedGraph): IndexedSeq[IndexedSeq[Double]] = {
     val (g, nags) = swg
 
@@ -102,23 +57,23 @@ package object Opinion {
   type FunctionUpdate =
     (SpecificBelief, SpecificWeightedGraph) => SpecificBelief
 
-  def confBiasUpdate(sb: SpecificBelief,
-                     swg: SpecificWeightedGraph): SpecificBelief = {
-    val (influence, nags) = swg
+  def confBiasUpdate(sb: SpecificBelief, swg: SpecificWeightedGraph): SpecificBelief = {
+    val (influence, _) = swg
 
-    Vector.tabulate(nags) { i =>
-      val bi        = sb(i)
-      // Aᵢ: agentes j con influencia directa sobre i
-      val neighbors = (0 until nags).filter(j => influence(j, i) > 0.0)
+    val n = sb.length
 
+    Vector.tabulate(n) { i =>
+      val bi = sb(i)
+      val neighbors =
+        (0 until n).filter(j => influence(j, i) > 0.0)
       if (neighbors.isEmpty) bi
       else {
-        val numerador = neighbors.map { j =>
-          val bj      = sb(j)
-          val beta_ij = 1.0 - math.abs(bj - bi)  // sesgo de confirmación
-          beta_ij * influence(j, i) * (bj - bi)
-        }.sum
-
+        val numerador =
+          neighbors.map { j =>
+            val bj = sb(j)
+            val beta = 1.0 - math.abs(bj - bi)
+            beta * influence(j, i) * (bj - bi)
+          }.sum
         math.max(0.0, math.min(1.0, bi + numerador / neighbors.size))
       }
     }
@@ -163,7 +118,7 @@ package object Opinion {
 
     def pi_b(entities: SpecificBelief, distribution: DistributionValues): Vector[Double] = {
       val bounds = buildBoundsPar(distribution)
-      val counts = bounds.map(interval => countIntervalPar(entities, interval))
+      val counts = bounds.par.map(interval => countIntervalPar(entities, interval)).toVector
       val totalAgents = entities.length.toDouble
       counts.map(_.toDouble / totalAgents)
     }
@@ -174,5 +129,25 @@ package object Opinion {
       val pi = pi_b(agents, y)
       medidaNorm((pi, y))
     }
+  }
+
+  def confBiasUpdatePar(sb: SpecificBelief, swg: SpecificWeightedGraph): SpecificBelief = {
+    val (influence, _) = swg
+    val n = sb.length
+    (0 until n).par.map { i =>
+      val bi = sb(i)
+      val neighbors =
+        (0 until n).filter(j => influence(j, i) > 0.0)
+      if (neighbors.isEmpty) bi
+      else {
+        val numerador =
+          neighbors.par.map { j =>
+            val bj = sb(j)
+            val beta = 1.0 - math.abs(bj - bi)
+            beta * influence(j, i) * (bj - bi)
+          }.sum
+        math.max(0.0, math.min(1.0, bi + numerador / neighbors.size))
+      }
+    }.toVector
   }
 }
