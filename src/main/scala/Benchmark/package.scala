@@ -131,7 +131,23 @@ package object Benchmark {
     } yield Scatter(ejet, evolPols(i)).withName(name ++ "-" ++ i.toString)
 
     val laySimSeq = Layout().withTitle(name)
-    plotSim.plot("simulEvol.html", laySimSeq)
+
+    println(s"Termino de calcular: $name")
+
+    plotSim.plot(
+      name + ".html",
+      laySimSeq,
+      true,   // usar CDN
+      false,  // NO abrir navegador
+      true    // si existe, agregar sufijo
+    )
+
+    println("Después del plot")
+
+    println(s"Guardó el HTML: $name")
+
+
+
     evolPols
   }
 }
