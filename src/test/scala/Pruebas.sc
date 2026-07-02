@@ -217,3 +217,20 @@ val i1_32768=i1(32768)
 val i2_32768=i2(32768)
 compararFuncionesAct(sbms. take(sbms. length/2),
   i2_32768 ,confBiasUpdate , confBiasUpdatePar)
+
+val sbes = for {
+  n <- 2 until 16
+  nags = math.pow(2, n).toInt
+} yield allExtremeBelief(nags)
+
+val sbts = for {
+  n <- 2 until 16
+  nags = math.pow(2, n).toInt
+} yield allTripleBelief(nags)
+
+val evolsSec = for {
+  i <- 0 until sbms.length
+} yield simEvolucion(Seq(sbms(i),sbes(i),sbts(i)),
+  i2_32768,10, polSec, confBiasUpdate, likert5,
+  "Simulacion_Secuencial_" ++ i.toString ++ "_"
+    ++ sbms(i).length.toString)

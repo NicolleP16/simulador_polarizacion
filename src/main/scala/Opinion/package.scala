@@ -1,5 +1,4 @@
 import Comete._
-import Opinion.SpecificBelief
 import common._
 
 import scala.collection.parallel.CollectionConverters._
