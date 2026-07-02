@@ -130,22 +130,27 @@ package object Opinion {
     }
   }
 
-  def confBiasUpdatePar(sb: SpecificBelief, swg: SpecificWeightedGraph): SpecificBelief = {
+  def confBiasUpdatePar(sb: SpecificBelief,
+                        swg: SpecificWeightedGraph): SpecificBelief = {
     val (influence, _) = swg
     val n = sb.length
+
     (0 until n).par.map { i =>
       val bi = sb(i)
       val neighbors =
         (0 until n).filter(j => influence(j, i) > 0.0)
+
       if (neighbors.isEmpty) bi
       else {
         val numerador =
-          neighbors.par.map { j =>
-            val bj = sb(j)
+          neighbors.map { j =>
+            val bj   = sb(j)
             val beta = 1.0 - math.abs(bj - bi)
             beta * influence(j, i) * (bj - bi)
           }.sum
-        math.max(0.0, math.min(1.0, bi + numerador / neighbors.size))
+
+        math.max(0.0, math.min(1.0,
+          bi + numerador / neighbors.size))
       }
     }.toVector
   }
